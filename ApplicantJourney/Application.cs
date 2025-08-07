@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ApplicantJourney
 {
-    internal class ApplicationTracker
+    internal class Application
     {
 
         public int Id { get; set; }    // Unique application ID
-        public int UserId { get; set; }
-        public int JobId { get; set; }
+        public int User { get; set; }
+        public int Position { get; set; }
         public DateTime ApplicationTime { get; set; }
         public ApplicationStatus Status { get; set; }
         public string ResumeUsed { get; set; }

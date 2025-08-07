@@ -34,9 +34,9 @@ namespace ApplicantJourney
             Other
         }
 
-        public int JobId { get; set; }   // Unique identifier for each job
+        public int Id { get; set; }   // Unique identifier for each job
         public string JobTitle { get; set; }    //  e.g., Software Engineer
-        public int CompanyId { get; set; }  // ID of the company offering the job
+        public int Company { get; set; }  // ID of the company offering the job
         public DateTime JobPostingDate { get; set; }    // When the job was posted
         public DateTime JobExpirationDate { get; set; }   // When the job expires
         public string JobDescription { get; set; }

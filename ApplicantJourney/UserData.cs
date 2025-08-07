@@ -22,7 +22,7 @@ namespace ApplicantJourney
 
         
         public List<JobListing> SavedPositions { get; set; } // Jobs saved by the user
-        public List<ApplicationTracker> TrackedApplications { get; set; }  // Applications tracked by the user
+        public List<Application> TrackedApplications { get; set; }  // Applications tracked by the user
 
         public JobPreferences Preferences { get; set; }    // User’s job preferences
 
@@ -34,7 +34,7 @@ namespace ApplicantJourney
         {
             Resumes = new List<Resume>();
             SavedPositions = new List<JobListing>();
-            TrackedApplications = new List<ApplicationTracker>();
+            TrackedApplications = new List<Application>();
         }
     }
 

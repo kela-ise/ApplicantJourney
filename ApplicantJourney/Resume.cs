@@ -13,7 +13,7 @@ namespace ApplicantJourney
     {
 
         public int Id { get; set; } // Unique resume ID
-        public Guid UserId { get; set; }  // ID of the user who uploaded it
+        public Guid User { get; set; }  // ID of the user who uploaded it
         public string FileUrl { get; set; }   // URL or path where the resume file is stored
         public DateTime ResumeUploadTime { get; set; }
         public float AtsScore { get; set; }  // ATS score analysis result

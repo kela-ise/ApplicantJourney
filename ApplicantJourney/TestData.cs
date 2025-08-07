@@ -47,9 +47,9 @@ namespace ApplicantJourney
 
             var job = new JobListing
             {
-                JobId = 101,
+                Id = 101,
                 JobTitle = "Junior Software Engineer",
-                CompanyId = company.Id,
+                Company = company.Id,
                 JobPostingDate = DateTime.Now.AddDays(-3),
                 JobExpirationDate = DateTime.Now.AddDays(27),
                 JobDescription = "Develop and maintain software solutions.",
@@ -78,7 +78,7 @@ namespace ApplicantJourney
             var resume = new Resume
             {
                 Id = 1,
-                UserId = userId,
+                User = userId,
                 FileUrl = "https://www.beamjobs.com/resumes/software-engineer-resume-examples",
                 ResumeUploadTime = DateTime.Now.AddDays(-1),
                 AtsScore = 78.5f,
@@ -88,7 +88,7 @@ namespace ApplicantJourney
                 {
                     new JobMatch
                     {
-                        JobId = job.JobId,
+                        JobId = job.Id,
                         MatchPercentage = 80.0f,
                         SuggestedImprovements = "Add CI/CD experience",
                         JobTitle = job.JobTitle,
@@ -99,11 +99,11 @@ namespace ApplicantJourney
 
             user.Resumes.Add(resume);
 
-            var application = new ApplicationTracker
+            var application = new Application
             {
                 Id = 5001,
-                UserId = 101,
-                JobId = job.JobId,
+                User = 101,
+                Position = job.Id,
                 ApplicationTime = DateTime.Now.AddDays(-2),
                 Status = ApplicationStatus.Applied,
                 ResumeUsed = resume.FileUrl,

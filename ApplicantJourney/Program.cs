@@ -31,7 +31,7 @@ namespace ApplicantJourney
                 var savedJob = user.SavedPositions[FirstIndex];
                 Console.WriteLine("Saved Job:");
                 Console.WriteLine($"Title: {savedJob.JobTitle}");
-                Console.WriteLine($"Company ID: {savedJob.CompanyId}");
+                Console.WriteLine($"Company ID: {savedJob.Company}");
                 Console.WriteLine($"Description: {savedJob.JobDescription}");
                 Console.WriteLine($"Salary Range: {savedJob.Salary.Min} - {savedJob.Salary.Max} {savedJob.Salary.Currency}");
                 Console.WriteLine($"Posted: {savedJob.JobPostingDate.ToShortDateString()}");
