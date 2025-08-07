@@ -9,9 +9,8 @@ namespace ApplicantJourney
     internal class ApplicationTracker
     {
 
-
-        public int ApplicationId { get; set; }    // Unique application ID
-        public Guid UserId { get; set; }
+        public int Id { get; set; }    // Unique application ID
+        public int UserId { get; set; }
         public int JobId { get; set; }
         public DateTime ApplicationTime { get; set; }
         public ApplicationStatus Status { get; set; }

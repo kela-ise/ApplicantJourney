@@ -12,7 +12,7 @@ namespace ApplicantJourney
     internal class Resume
     {
 
-        public int ResumeId { get; set; } // Unique resume ID
+        public int Id { get; set; } // Unique resume ID
         public Guid UserId { get; set; }  // ID of the user who uploaded it
         public string FileUrl { get; set; }   // URL or path where the resume file is stored
         public DateTime ResumeUploadTime { get; set; }

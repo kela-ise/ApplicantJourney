@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace ApplicantJourney
 {
-    /*
-     <summary>
-     Represents a user profile and their preferences
-      <summary>
-    */
+  /*
+   <summary>
+   Represents a user profile and their preferences
+    <summary>
+  */
     internal class UserData
     {
-
-        public Guid UserId { get; set; }  // Unique identifier for the user
+       
+        public Guid Id { get; set; }  // Unique identifier for the user
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public List<Resume> Resumes { get; set; } // Uploaded resume
 
-
+        
         public List<JobListing> SavedPositions { get; set; } // Jobs saved by the user
         public List<ApplicationTracker> TrackedApplications { get; set; }  // Applications tracked by the user
 

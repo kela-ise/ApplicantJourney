@@ -8,8 +8,8 @@ namespace ApplicantJourney
 {
     internal class CompanyData
     {
-        public int CompanyId { get; set; }
-        public string CompanyName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
         public string HiringTrends { get; set; } // Trend data for job postings or hiring
         public float AverageSalary { get; set; } // Estimated salary for roles
         public string JobSource { get; set; }  // Where job was sourced (e.g., LinkedIn)

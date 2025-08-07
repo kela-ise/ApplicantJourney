@@ -22,7 +22,7 @@ namespace ApplicantJourney
 
             var user = new UserData
             {
-                UserId = userId,
+                Id = userId,
                 Name = "Kela Ise",
                 Email = "kela@meta.com",
                 Password = "TestPassword1", 
@@ -49,7 +49,7 @@ namespace ApplicantJourney
             {
                 JobId = 101,
                 JobTitle = "Junior Software Engineer",
-                CompanyId = company.CompanyId,
+                CompanyId = company.Id,
                 JobPostingDate = DateTime.Now.AddDays(-3),
                 JobExpirationDate = DateTime.Now.AddDays(27),
                 JobDescription = "Develop and maintain software solutions.",
@@ -77,7 +77,7 @@ namespace ApplicantJourney
 
             var resume = new Resume
             {
-                ResumeId = 1,
+                Id = 1,
                 UserId = userId,
                 FileUrl = "https://www.beamjobs.com/resumes/software-engineer-resume-examples",
                 ResumeUploadTime = DateTime.Now.AddDays(-1),
@@ -101,8 +101,8 @@ namespace ApplicantJourney
 
             var application = new ApplicationTracker
             {
-                ApplicationId = 5001,
-                UserId = userId,
+                Id = 5001,
+                UserId = 101,
                 JobId = job.JobId,
                 ApplicationTime = DateTime.Now.AddDays(-2),
                 Status = ApplicationStatus.Applied,
@@ -122,8 +122,8 @@ namespace ApplicantJourney
         {
             return new CompanyData
             {
-                CompanyId = 2001,
-                CompanyName = "Meta Inc.",
+                Id = 2001,
+                Name = "Meta Inc.",
                 HiringTrends = "Hiring aggressively in AI and backend roles.",
                 AverageSalary = 92000f,
                 JobSource = "CompanyWebsite",
