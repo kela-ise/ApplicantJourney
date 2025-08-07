@@ -11,9 +11,8 @@ namespace ApplicantJourney
     */
     internal class Resume
     {
-
         public int Id { get; set; } // Unique resume ID
-        public Guid User { get; set; }  // ID of the user who uploaded it
+        public int User { get; set; }  // ID of the user who uploaded it
         public string FileUrl { get; set; }   // URL or path where the resume file is stored
         public DateTime ResumeUploadTime { get; set; }
         public float AtsScore { get; set; }  // ATS score analysis result
@@ -31,11 +30,10 @@ namespace ApplicantJourney
 
     public class JobMatch
     {
-        public int JobId { get; set; }
+        public int Id { get; set; }
         public float MatchPercentage { get; set; }
         public string SuggestedImprovements { get; set; }
         public string JobTitle { get; set; }
         public string JobDescription { get; set; }
-
     }
 }

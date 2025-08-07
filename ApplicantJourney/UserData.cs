@@ -4,31 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ <summary>
+ Represents a user profile and their preferences
+ <summary>
+*/
 namespace ApplicantJourney
 {
-  /*
-   <summary>
-   Represents a user profile and their preferences
-    <summary>
-  */
     internal class UserData
     {
-       
-        public Guid Id { get; set; }  // Unique identifier for the user
+        public int Id { get; set; }  // Unique identifier for the user
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public List<Resume> Resumes { get; set; } // Uploaded resume
 
-        
         public List<JobListing> SavedPositions { get; set; } // Jobs saved by the user
         public List<Application> TrackedApplications { get; set; }  // Applications tracked by the user
 
         public JobPreferences Preferences { get; set; }    // User’s job preferences
 
-
         public NotificationSettings Notifications { get; set; }  // Notification preferences
-
 
         public UserData()     // Constructor to initialize lists
         {
@@ -57,6 +53,5 @@ namespace ApplicantJourney
     {
         Instant,
         NotificationFrequency
-
     }
 }

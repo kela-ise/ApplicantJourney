@@ -10,7 +10,7 @@ namespace ApplicantJourney
     {
 
         public int Id { get; set; }    // Unique application ID
-        public int User { get; set; }
+        public int ApplicantNumber { get; set; }
         public int Position { get; set; }
         public DateTime ApplicationTime { get; set; }
         public ApplicationStatus Status { get; set; }

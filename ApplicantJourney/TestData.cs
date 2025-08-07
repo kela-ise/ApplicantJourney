@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-
 
 namespace ApplicantJourney
 {
@@ -18,14 +15,14 @@ namespace ApplicantJourney
     {
         public UserData CreateTestUser()
         {
-            var userId = Guid.NewGuid();
+            int userId = 1001;
 
             var user = new UserData
             {
                 Id = userId,
                 Name = "Kela Ise",
                 Email = "kela@meta.com",
-                Password = "TestPassword1", 
+                Password = "TestPassword1",
 
                 Preferences = new JobPreferences
                 {
@@ -88,7 +85,7 @@ namespace ApplicantJourney
                 {
                     new JobMatch
                     {
-                        JobId = job.Id,
+                        Id = job.Id,
                         MatchPercentage = 80.0f,
                         SuggestedImprovements = "Add CI/CD experience",
                         JobTitle = job.JobTitle,
@@ -102,7 +99,7 @@ namespace ApplicantJourney
             var application = new Application
             {
                 Id = 5001,
-                User = 101,
+                ApplicantNumber = 101,
                 Position = job.Id,
                 ApplicationTime = DateTime.Now.AddDays(-2),
                 Status = ApplicationStatus.Applied,
