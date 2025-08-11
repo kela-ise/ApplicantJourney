@@ -17,21 +17,11 @@ namespace ApplicantJourney
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public List<Resume> Resumes { get; set; } // Uploaded resume
-
-        public List<JobListing> SavedPositions { get; set; } // Jobs saved by the user
-        public List<Application> TrackedApplications { get; set; }  // Applications tracked by the user
-
+        public List<Resume> Resumes { get; set; } = new List<Resume>(); // Uploaded resumes
+        public List<JobListing> SavedPositions { get; set; } = new List<JobListing>(); // Jobs saved by the user
+        public List<Application> TrackedApplications { get; set; } = new List<Application>();  // Applications tracked by the user
         public JobPreferences Preferences { get; set; }    // User’s job preferences
-
         public NotificationSettings Notifications { get; set; }  // Notification preferences
-
-        public UserData()     // Constructor to initialize lists
-        {
-            Resumes = new List<Resume>();
-            SavedPositions = new List<JobListing>();
-            TrackedApplications = new List<Application>();
-        }
     }
 
     public class JobPreferences
@@ -47,11 +37,5 @@ namespace ApplicantJourney
         public bool EmailAlerts { get; set; }
         public bool PushNotifications { get; set; }
         public NotificationFrequency Frequency { get; set; }
-    }
-
-    public enum NotificationFrequency
-    {
-        Instant,
-        NotificationFrequency
     }
 }

@@ -12,28 +12,8 @@ namespace ApplicantJourney
      Represents a job listing scraped from job boards or company websites.
      </summary>
    */
-
     internal class JobListing
     {
-        public enum JobType
-        {
-            FullTime,
-            PartTime,
-            Internship,
-            Contract,
-            Temporary
-        }
-
-        public enum JobListingSource   // website where the job is posted
-        {// NOTE: avoid duplicate post, if same job is posted in multiple sites
-            LinkedIn,
-            Indeed,
-            CompanyWebsite,
-            Monster,
-            Glassdoor,
-            Other
-        }
-
         public int Id { get; set; }   // Unique identifier for each job
         public string JobTitle { get; set; }    //  e.g., Software Engineer
         public int Company { get; set; }  // ID of the company offering the job
@@ -52,7 +32,6 @@ namespace ApplicantJourney
         public LocationInfo JobLocation { get; set; }         // Nested class for location info
         public JobType Type { get; set; }
 
-
         public void AddJobListing(   // Method to add a new job listing
             string title,
             int companyId,
@@ -65,6 +44,25 @@ namespace ApplicantJourney
         {
             // Continue implementation
         }
+
+        public enum JobType
+        {
+            FullTime,
+            PartTime,
+            Internship,
+            Contract,
+            Temporary
+        }
+
+        public enum JobListingSource   // website where the job is posted
+        {// NOTE: avoid duplicate post, if same job is posted in multiple sites
+            LinkedIn,
+            Indeed,
+            CompanyWebsite,
+            Monster,
+            Glassdoor,
+            Other
+        }
     }
 
     public class SalaryRange // Nested class for salary information
@@ -73,7 +71,6 @@ namespace ApplicantJourney
         public float Max { get; set; }               // Maximum salary
         public string Currency { get; set; }        // Currency (e.g., "USD", "EUR")
     }
-
 
     public class LocationInfo   // Nested class for location information
     {

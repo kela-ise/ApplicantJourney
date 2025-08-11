@@ -8,7 +8,6 @@ namespace ApplicantJourney
 {
     internal class Application
     {
-
         public int Id { get; set; }    // Unique application ID
         public int ApplicantNumber { get; set; }
         public int Position { get; set; }
@@ -19,22 +18,5 @@ namespace ApplicantJourney
         public DateTime LastFollowUpTime { get; set; } // Follow-up details
         public DateTime NextFollowUpTime { get; set; }
         public UserJobApplicationSite SiteWhereUserApplied { get; set; } // Application platform used
-    }
-    public enum ApplicationStatus
-    {
-        Applied,
-        Interview,
-        InProgress,
-        Rejected,
-        Offer
-    }
-
-    public enum UserJobApplicationSite
-    {
-        LinkedInEasyApply,
-        CompanyWebsite,
-        Email
-
-
     }
 }

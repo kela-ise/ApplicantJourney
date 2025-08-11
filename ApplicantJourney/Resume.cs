@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ Users resume and ATS analysis data
+*/
 namespace ApplicantJourney
 {
-    /*
-    Users resume and ATS analysis data
-    */
     internal class Resume
     {
         public int Id { get; set; } // Unique resume ID
@@ -16,16 +16,9 @@ namespace ApplicantJourney
         public string FileUrl { get; set; }   // URL or path where the resume file is stored
         public DateTime ResumeUploadTime { get; set; }
         public float AtsScore { get; set; }  // ATS score analysis result
-        public List<string> MissingKeywords { get; set; }  // Keywords missing from resume
-        public List<string> FormatIssues { get; set; }
-        public List<JobMatch> JobMatches { get; set; }
-
-        public Resume()
-        {
-            MissingKeywords = new List<string>();
-            FormatIssues = new List<string>();
-            JobMatches = new List<JobMatch>();
-        }
+        public List<string> MissingKeywords { get; set; } = new List<string>();  // Keywords missing from resume
+        public List<string> FormatIssues { get; set; } = new List<string>();
+        public List<JobMatch> JobMatches { get; set; } = new List<JobMatch>();
     }
 
     public class JobMatch
