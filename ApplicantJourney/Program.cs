@@ -39,7 +39,6 @@ namespace ApplicantJourney
                 Console.WriteLine();
             }
 
-            
             bool myUploadedResumes = user.Resumes.Count > FirstIndex; // Display resume details if any resume is uploaded
             if (myUploadedResumes)
             {

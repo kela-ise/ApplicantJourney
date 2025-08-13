@@ -17,7 +17,7 @@ namespace ApplicantJourney
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public List<Resume> Resumes { get; set; } = new List<Resume>(); // Uploaded resumes
+        public List<Resume> Resumes { get; set; } = new List<Resume>(); // Uploaded resume
         public List<JobListing> SavedPositions { get; set; } = new List<JobListing>(); // Jobs saved by the user
         public List<Application> TrackedApplications { get; set; } = new List<Application>();  // Applications tracked by the user
         public JobPreferences Preferences { get; set; }    // User’s job preferences

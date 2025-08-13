@@ -16,7 +16,5 @@ namespace ApplicantJourney
         public float ReputationScore { get; set; }      // Public/company ratings (e.g., from Glassdoor)
         public int EstimatedApplications { get; set; }  // How many applicants typically apply
         public string CompetitionInsights { get; set; } // Notes on competition or demand
-
-
     }
 }

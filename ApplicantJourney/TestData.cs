@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+ <summary>
+ Provides test data to simulate users, companies, job listings, applications, and resumes.
+ </summary>
+*/
 namespace ApplicantJourney
 {
-    /*
-     <summary>
-     Provides test data to simulate users, companies, job listings, applications, and resumes.
-     </summary>
-    */
     internal class TestData
     {
         public UserData CreateTestUser()
@@ -51,10 +51,10 @@ namespace ApplicantJourney
                 JobExpirationDate = DateTime.Now.AddDays(27),
                 JobDescription = "Develop and maintain software solutions.",
                 ExperienceLevel = "Entry Level",
-                Source = JobListing.JobListingSource.CompanyWebsite,
+                Source = JobListingSource.CompanyWebsite, // UPDATED (was JobListing.JobListingSource...)
                 Url = "https://www.metacareers.com/jobs/683293827670564",
                 ApplicantsCount = 42,
-                Type = JobListing.JobType.FullTime,
+                Type = JobType.FullTime, // UPDATED (was JobListing.JobType...)
                 Salary = new SalaryRange
                 {
                     Min = 180000f,
