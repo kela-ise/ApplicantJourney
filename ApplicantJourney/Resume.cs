@@ -20,7 +20,6 @@ namespace ApplicantJourney
         public List<string> FormatIssues { get; set; } = new List<string>();
         public List<JobMatch> JobMatches { get; set; } = new List<JobMatch>();
     }
-
     public class JobMatch
     {
         public int Id { get; set; }
