@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,12 +9,16 @@ using System.Threading.Tasks;
 /*
  <summary>
  Provides test data to simulate users, companies, job listings, applications, and resumes.
+ Also supports saving/loading the generated test data using XML serialization.
  </summary>
 */
 namespace ApplicantJourney
 {
     internal class TestData
     {
+        // Absolute file path for saving/loading serialized data
+        private const string FilePath =  @"C:\Users\ebike\OneDrive\Desktop\C# Projects\ApplicantJourney\ApplicantJourney\TestData.xml";
+
         public UserData CreateTestUser()
         {
             int userId = 1001;
@@ -51,10 +57,10 @@ namespace ApplicantJourney
                 JobExpirationDate = DateTime.Now.AddDays(27),
                 JobDescription = "Develop and maintain software solutions.",
                 ExperienceLevel = "Entry Level",
-                Source = JobListingSource.CompanyWebsite, // UPDATED (was JobListing.JobListingSource...)
+                Source = JobListingSource.CompanyWebsite,
                 Url = "https://www.metacareers.com/jobs/683293827670564",
                 ApplicantsCount = 42,
-                Type = JobType.FullTime, // UPDATED (was JobListing.JobType...)
+                Type = JobType.FullTime,
                 Salary = new SalaryRange
                 {
                     Min = 180000f,
@@ -112,6 +118,9 @@ namespace ApplicantJourney
 
             user.TrackedApplications.Add(application);
 
+            // Save the generated user data to file
+            SaveTestUser(user);
+
             return user;
         }
 
@@ -128,6 +137,36 @@ namespace ApplicantJourney
                 EstimatedApplications = 150,
                 CompetitionInsights = "High competition for remote roles, especially junior positions."
             };
+        }
+
+        /// <summary>
+        /// Save user test data to XML file
+        /// </summary>
+        private void SaveTestUser(UserData user)
+        {
+            var serializer = new XmlSerializer(typeof(UserData));
+            using (var writer = new StreamWriter(FilePath))
+            {
+                serializer.Serialize(writer, user);
+            }
+        }
+
+        /// <summary>
+        /// Load user test data from XML file (if it exists). Returns null if not found or invalid.
+        /// </summary>
+        public UserData? LoadTestUser()
+        {
+            if (!File.Exists(FilePath))
+            {
+                return null; // No saved file found
+            }
+
+            var serializer = new XmlSerializer(typeof(UserData));
+            using (var reader = new StreamReader(FilePath))
+            {
+                // Deserialize can return null if the file is empty/corrupt
+                return serializer.Deserialize(reader) as UserData;
+            }
         }
     }
 }

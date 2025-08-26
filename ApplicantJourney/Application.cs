@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApplicantJourney
 {
-    internal class Application
+    public class Application  
     {
         public int Id { get; set; }    // Unique application ID
         public int ApplicantNumber { get; set; }

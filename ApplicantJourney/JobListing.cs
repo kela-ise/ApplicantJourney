@@ -11,7 +11,7 @@ namespace ApplicantJourney
      Represents a job listing scraped from job boards or company websites.
      </summary>
    */
-    internal class JobListing
+    public class JobListing   // CHANGED: was internal
     {
         public int Id { get; set; }   // Unique identifier for each job
         public string JobTitle { get; set; }    //  e.g., Software Engineer

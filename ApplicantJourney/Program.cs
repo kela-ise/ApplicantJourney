@@ -12,12 +12,26 @@ namespace ApplicantJourney
             Console.WriteLine("This system helps you track job posting from companies of interest, track application status, and optimize resume.");
             Console.WriteLine();
 
-            // Initialize test data
+            // Initialize test data helper
             var testData = new TestData();
-            var user = testData.CreateTestUser();
+
+            // Try to load persisted test data first; if not found, create and persist it
+            var user = testData.LoadTestUser();
+            if (user == null)
+            {
+                Console.WriteLine("No saved data found. Creating and saving test user...");
+                user = testData.CreateTestUser();
+                Console.WriteLine("Test user created and saved.");
+            }
+            else
+            {
+                Console.WriteLine("Loaded test user from disk.");
+            }
+
+            Console.WriteLine();
 
             // Display basic user info
-            Console.WriteLine("Test User Created:");
+            Console.WriteLine("Test User Loaded:");
             Console.WriteLine($"Name: {user.Name}");
             Console.WriteLine($"Email: {user.Email}");
             Console.WriteLine($"Preferred Roles: {string.Join(", ", user.Preferences.PreferredJobTitles)}");

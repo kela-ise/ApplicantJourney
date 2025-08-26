@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 */
 namespace ApplicantJourney
 {
-    internal class Resume
+    public class Resume  
     {
         public int Id { get; set; } // Unique resume ID
         public int User { get; set; }  // ID of the user who uploaded it
@@ -20,6 +20,7 @@ namespace ApplicantJourney
         public List<string> FormatIssues { get; set; } = new List<string>();
         public List<JobMatch> JobMatches { get; set; } = new List<JobMatch>();
     }
+
     public class JobMatch
     {
         public int Id { get; set; }
