@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using static ApplicantJourney.Constants; 
 
 namespace ApplicantJourney
 {
@@ -6,10 +8,12 @@ namespace ApplicantJourney
     {
         static void Main(string[] args)
         {
-            const int FirstIndex = 0; // Constant to represent the first item in a list
+            Console.WriteLine($"Welcome to the {AppName}!");
+            Console.WriteLine(WelcomeMessage);
+            Console.WriteLine();
 
-            Console.WriteLine("Welcome to the Job Application Tracking System!");
-            Console.WriteLine("This system helps you track job posting from companies of interest, track application status, and optimize resume.");
+            // Show my data file location
+            Console.WriteLine($"Data file path: {Path.GetFullPath(TestDataFileName)}");
             Console.WriteLine();
 
             // Initialize test data helper
@@ -19,19 +23,19 @@ namespace ApplicantJourney
             var user = testData.LoadTestUser();
             if (user == null)
             {
-                Console.WriteLine("No saved data found. Creating and saving test user...");
+                Console.WriteLine(NoSavedDataMessage);
                 user = testData.CreateTestUser();
-                Console.WriteLine("Test user created and saved.");
+                Console.WriteLine(SavedDataCreatedMessage);
             }
             else
             {
-                Console.WriteLine("Loaded test user from disk.");
+                Console.WriteLine(LoadedFromDiskMessage);
             }
 
             Console.WriteLine();
 
             // Display basic user info
-            Console.WriteLine("Test User Loaded:");
+            Console.WriteLine(TestUserHeader);
             Console.WriteLine($"Name: {user.Name}");
             Console.WriteLine($"Email: {user.Email}");
             Console.WriteLine($"Preferred Roles: {string.Join(", ", user.Preferences.PreferredJobTitles)}");
@@ -39,11 +43,11 @@ namespace ApplicantJourney
             Console.WriteLine();
 
             // Display saved job listing if available
-            bool hasSavedJobs = user.SavedPositions.Count > FirstIndex;
+            bool hasSavedJobs = user.SavedPositions.Count > FirstIndex; 
             if (hasSavedJobs)
             {
                 var savedJob = user.SavedPositions[FirstIndex];
-                Console.WriteLine("Saved Job:");
+                Console.WriteLine(SavedJobHeader);
                 Console.WriteLine($"Title: {savedJob.JobTitle}");
                 Console.WriteLine($"Company ID: {savedJob.Company}");
                 Console.WriteLine($"Description: {savedJob.JobDescription}");
@@ -57,7 +61,7 @@ namespace ApplicantJourney
             if (myUploadedResumes)
             {
                 var resume = user.Resumes[FirstIndex];
-                Console.WriteLine("Resume Info:");
+                Console.WriteLine(ResumeHeader);
                 Console.WriteLine($"Uploaded: {resume.ResumeUploadTime}");
                 Console.WriteLine($"ATS Score: {resume.AtsScore}");
                 Console.WriteLine($"Missing Keywords: {string.Join(", ", resume.MissingKeywords)}");
@@ -70,7 +74,7 @@ namespace ApplicantJourney
             if (hasTrackedApplications)
             {
                 var application = user.TrackedApplications[FirstIndex];
-                Console.WriteLine("Application Info:");
+                Console.WriteLine(ApplicationHeader);
                 Console.WriteLine($"Applied On: {application.ApplicationTime}");
                 Console.WriteLine($"Status: {application.Status}");
                 Console.WriteLine($"Resume Used: {application.ResumeUsed}");
@@ -78,8 +82,13 @@ namespace ApplicantJourney
                 Console.WriteLine($"Platform: {application.SiteWhereUserApplied}");
             }
 
+            // Always persist current state before exit (even if we only loaded)
+            testData.SaveTestUser(user);
             Console.WriteLine();
-            Console.WriteLine("Press any key to exit...");
+            Console.WriteLine("Current state saved to disk.");
+
+            Console.WriteLine();
+            Console.WriteLine(ExitPrompt);
             Console.ReadKey();
         }
     }

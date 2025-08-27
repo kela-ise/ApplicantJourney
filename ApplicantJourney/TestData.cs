@@ -14,14 +14,13 @@ using System.Threading.Tasks;
 */
 namespace ApplicantJourney
 {
-    internal class TestData
+    public class TestData
     {
-        // Absolute file path for saving/loading serialized data
-        private const string FilePath =  @"C:\Users\ebike\OneDrive\Desktop\C# Projects\ApplicantJourney\ApplicantJourney\TestData.xml";
+        private static readonly string FilePath = Constants.TestDataFileName;
 
         public UserData CreateTestUser()
         {
-            int userId = 1001;
+            int userId = Constants.DefaultUserId;
 
             var user = new UserData
             {
@@ -46,7 +45,7 @@ namespace ApplicantJourney
                 }
             };
 
-            var company = CreateTestCompany();
+            var company = TestData.CreateTestCompany();
 
             var job = new JobListing
             {
@@ -124,7 +123,11 @@ namespace ApplicantJourney
             return user;
         }
 
-        public CompanyData CreateTestCompany()
+        /// <summary>
+        /// Creates a sample company for test data.
+        /// Now marked static because it does not rely on instance members.
+        /// </summary>
+        public static CompanyData CreateTestCompany()
         {
             return new CompanyData
             {
@@ -140,19 +143,28 @@ namespace ApplicantJourney
         }
 
         /// <summary>
-        /// Save user test data to XML file
+        /// Save user test data to XML file (safe write with descriptive temp file).
+        /// Made public so callers can persist changes any time.
         /// </summary>
-        private void SaveTestUser(UserData user)
+        public void SaveTestUser(UserData user)
         {
             var serializer = new XmlSerializer(typeof(UserData));
-            using (var writer = new StreamWriter(FilePath))
+
+            // Use a descriptive name for the temp file (e.g., "TestData.tempSerializationFile.xml")
+            var tempFilePath = FilePath.Replace(".xml", Constants.TempSerializationSuffix);
+
+            using (var writer = new StreamWriter(tempFilePath))
             {
                 serializer.Serialize(writer, user);
             }
+
+            File.Copy(tempFilePath, FilePath, overwrite: true); // overwrite safely
+            File.Delete(tempFilePath);
         }
 
         /// <summary>
-        /// Load user test data from XML file (if it exists). Returns null if not found or invalid.
+        /// Load user test data from XML file (short version).
+        /// Returns null if the file does not exist.
         /// </summary>
         public UserData? LoadTestUser()
         {
@@ -164,7 +176,6 @@ namespace ApplicantJourney
             var serializer = new XmlSerializer(typeof(UserData));
             using (var reader = new StreamReader(FilePath))
             {
-                // Deserialize can return null if the file is empty/corrupt
                 return serializer.Deserialize(reader) as UserData;
             }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApplicantJourney
 {
-    internal class CompanyData
+    public class CompanyData 
     {
         public int Id { get; set; }
         public string Name { get; set; }
