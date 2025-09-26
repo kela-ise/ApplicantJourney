@@ -1,25 +1,23 @@
 ﻿using System;
 using System.IO;
-using static ApplicantJourney.Constants; 
+using System.Threading.Tasks;
+using static ApplicantJourney.Constants;
+
 
 namespace ApplicantJourney
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine($"Welcome to the {AppName}!");
             Console.WriteLine(WelcomeMessage);
             Console.WriteLine();
 
-            // Show my data file location
             Console.WriteLine($"Data file path: {Path.GetFullPath(TestDataFileName)}");
             Console.WriteLine();
 
-            // Initialize test data helper
             var testData = new TestData();
-
-            // Try to load persisted test data first; if not found, create and persist it
             var user = testData.LoadTestUser();
             if (user == null)
             {
@@ -33,8 +31,6 @@ namespace ApplicantJourney
             }
 
             Console.WriteLine();
-
-            // Display basic user info
             Console.WriteLine(TestUserHeader);
             Console.WriteLine($"Name: {user.Name}");
             Console.WriteLine($"Email: {user.Email}");
@@ -42,47 +38,70 @@ namespace ApplicantJourney
             Console.WriteLine($"Preferred Locations: {string.Join(", ", user.Preferences.Locations)}");
             Console.WriteLine();
 
-            // Display saved job listing if available
-            bool hasSavedJobs = user.SavedPositions.Count > FirstIndex; 
-            if (hasSavedJobs)
+            // Prompt for Greenhouse board token
+            Console.Write("Enter a Greenhouse board token (default = vaulttec): ");
+            var inputToken = Console.ReadLine();
+            var boardToken = string.IsNullOrWhiteSpace(inputToken) ? "vaulttec" : inputToken.Trim();
+
+            var greenhouseClient = new GreenhouseApiClient();
+            Console.WriteLine("\nFetching live job listings from Greenhouse...");
+
+            try
             {
-                var savedJob = user.SavedPositions[FirstIndex];
-                Console.WriteLine(SavedJobHeader);
-                Console.WriteLine($"Title: {savedJob.JobTitle}");
-                Console.WriteLine($"Company ID: {savedJob.Company}");
-                Console.WriteLine($"Description: {savedJob.JobDescription}");
-                Console.WriteLine($"Salary Range: {savedJob.Salary.Min} - {savedJob.Salary.Max} {savedJob.Salary.Currency}");
-                Console.WriteLine($"Posted: {savedJob.JobPostingDate.ToShortDateString()}");
-                Console.WriteLine($"URL: {savedJob.Url}");
-                Console.WriteLine();
+                var jobsResponse = await greenhouseClient.FetchJobsAsync(boardToken);
+
+                if (jobsResponse?.Jobs != null && jobsResponse.Jobs.Count > 0)
+                {
+                    Console.WriteLine($"Found {jobsResponse.Jobs.Count} jobs:\n");
+
+                    foreach (var job in jobsResponse.Jobs)
+                    {
+                        // Map API job into our JobListing structure
+                        var mappedJob = new JobListing
+                        {
+                            Id = job.Id,
+                            JobTitle = job.Title,
+                            JobDescription = job.Content, // using job.content for description
+                            Company = 0, // Greenhouse API doesn’t provide numeric company id
+                            JobPostingDate = job.UpdatedAt,
+                            JobExpirationDate = DateTime.Now.AddDays(30), // placeholder
+                            Source = JobListingSource.Other,
+                            Url = job.AbsoluteUrl,
+                            ApplicantsCount = 0,
+                            ExperienceLevel = "Not Specified",
+                            Salary = new SalaryRange
+                            {
+                                Min = 0,
+                                Max = 0,
+                                Currency = "USD"
+                            },
+                            JobLocation = new LocationInfo
+                            {
+                                LocationType = "Office/Remote",
+                                IsRemote = false,
+                                IsHybrid = false,
+                                PhysicalLocation = job.Location?.Name ?? "Unknown"
+                            },
+                            Type = JobType.FullTime
+                        };
+
+                        // Print mapped job details
+                        Console.WriteLine($"- {mappedJob.JobTitle} | {mappedJob.JobLocation.PhysicalLocation}");
+                        Console.WriteLine($"  {mappedJob.Url}");
+                        Console.WriteLine($"  Description: {mappedJob.JobDescription}\n");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No jobs found or API request failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine($"Message: {ex.Message}");
             }
 
-            bool myUploadedResumes = user.Resumes.Count > FirstIndex; // Display resume details if any resume is uploaded
-            if (myUploadedResumes)
-            {
-                var resume = user.Resumes[FirstIndex];
-                Console.WriteLine(ResumeHeader);
-                Console.WriteLine($"Uploaded: {resume.ResumeUploadTime}");
-                Console.WriteLine($"ATS Score: {resume.AtsScore}");
-                Console.WriteLine($"Missing Keywords: {string.Join(", ", resume.MissingKeywords)}");
-                Console.WriteLine($"Format Issues: {string.Join(", ", resume.FormatIssues)}");
-                Console.WriteLine();
-            }
-
-            // Display application details if user has tracked applications
-            bool hasTrackedApplications = user.TrackedApplications.Count > FirstIndex;
-            if (hasTrackedApplications)
-            {
-                var application = user.TrackedApplications[FirstIndex];
-                Console.WriteLine(ApplicationHeader);
-                Console.WriteLine($"Applied On: {application.ApplicationTime}");
-                Console.WriteLine($"Status: {application.Status}");
-                Console.WriteLine($"Resume Used: {application.ResumeUsed}");
-                Console.WriteLine($"Next Follow-up: {application.NextFollowUpTime}");
-                Console.WriteLine($"Platform: {application.SiteWhereUserApplied}");
-            }
-
-            // Always persist current state before exit (even if we only loaded)
             testData.SaveTestUser(user);
             Console.WriteLine();
             Console.WriteLine("Current state saved to disk.");

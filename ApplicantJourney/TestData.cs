@@ -25,7 +25,7 @@ namespace ApplicantJourney
             var user = new UserData
             {
                 Id = userId,
-                Name = "Kela Ise",
+                Name = "Kela Best",
                 Email = "kela@meta.com",
                 Password = "TestPassword1",
 
