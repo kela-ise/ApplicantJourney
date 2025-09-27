@@ -3,12 +3,11 @@ using System.IO;
 using System.Threading.Tasks;
 using static ApplicantJourney.Constants;
 
-
 namespace ApplicantJourney
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             Console.WriteLine($"Welcome to the {AppName}!");
             Console.WriteLine(WelcomeMessage);
@@ -38,57 +37,40 @@ namespace ApplicantJourney
             Console.WriteLine($"Preferred Locations: {string.Join(", ", user.Preferences.Locations)}");
             Console.WriteLine();
 
-            // Prompt for Greenhouse board token
+            // Ask for Greenhouse board token
             Console.Write("Enter a Greenhouse board token (default = vaulttec): ");
             var inputToken = Console.ReadLine();
             var boardToken = string.IsNullOrWhiteSpace(inputToken) ? "vaulttec" : inputToken.Trim();
 
             var greenhouseClient = new GreenhouseApiClient();
-            Console.WriteLine("\nFetching live job listings from Greenhouse...");
+            Console.WriteLine("\nFetching live job listings from Greenhouse (with HTML descriptions)...");
+            Console.WriteLine($"Greenhouse API URL: https://boards-api.greenhouse.io/v1/boards/{boardToken}/jobs?content=true");
 
             try
             {
-                var jobsResponse = await greenhouseClient.FetchJobsAsync(boardToken);
+                var jobsResponse = greenhouseClient
+                    .FetchJobsAsync(boardToken, includeContent: true)
+                    .GetAwaiter()
+                    .GetResult();
 
                 if (jobsResponse?.Jobs != null && jobsResponse.Jobs.Count > 0)
                 {
-                    Console.WriteLine($"Found {jobsResponse.Jobs.Count} jobs:\n");
+                    Console.WriteLine($"Found {jobsResponse.Meta?.Total ?? jobsResponse.Jobs.Count} jobs:\n");
 
-                    foreach (var job in jobsResponse.Jobs)
+                    foreach (var gh in jobsResponse.Jobs)
                     {
-                        // Map API job into our JobListing structure
-                        var mappedJob = new JobListing
-                        {
-                            Id = job.Id,
-                            JobTitle = job.Title,
-                            JobDescription = job.Content, // using job.content for description
-                            Company = 0, // Greenhouse API doesn’t provide numeric company id
-                            JobPostingDate = job.UpdatedAt,
-                            JobExpirationDate = DateTime.Now.AddDays(30), // placeholder
-                            Source = JobListingSource.Other,
-                            Url = job.AbsoluteUrl,
-                            ApplicantsCount = 0,
-                            ExperienceLevel = "Not Specified",
-                            Salary = new SalaryRange
-                            {
-                                Min = 0,
-                                Max = 0,
-                                Currency = "USD"
-                            },
-                            JobLocation = new LocationInfo
-                            {
-                                LocationType = "Office/Remote",
-                                IsRemote = false,
-                                IsHybrid = false,
-                                PhysicalLocation = job.Location?.Name ?? "Unknown"
-                            },
-                            Type = JobType.FullTime
-                        };
+                        // Map API job into our domain model (store raw HTML in JobDescription)
+                        var mapped = gh.ToJobListing(companyId: 0);
 
-                        // Print mapped job details
-                        Console.WriteLine($"- {mappedJob.JobTitle} | {mappedJob.JobLocation.PhysicalLocation}");
-                        Console.WriteLine($"  {mappedJob.Url}");
-                        Console.WriteLine($"  Description: {mappedJob.JobDescription}\n");
+                        Console.WriteLine($"- {mapped.JobTitle} | {mapped.JobLocation.PhysicalLocation}");
+                        Console.WriteLine($"  {mapped.Url}");
+
+                        // I'm returning the first 250 characters of the job description
+                        var html = mapped.JobDescription ?? string.Empty;
+                        var previewLength = Math.Min(250, html.Length);
+                        var previewExact = html.Substring(0, previewLength);
+                        Console.WriteLine($"  Description (first 250 chars, raw HTML): {previewExact}");
+                        Console.WriteLine();
                     }
                 }
                 else
@@ -96,12 +78,19 @@ namespace ApplicantJourney
                     Console.WriteLine("No jobs found or API request failed.");
                 }
             }
-            catch (Exception ex)
+            catch (System.Net.Http.HttpRequestException ex)
             {
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine($"Message: {ex.Message}");
+                Console.WriteLine("Tip: verify the token in a browser: https://boards.greenhouse.io/<token>");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\nUnexpected error while fetching jobs:");
+                Console.WriteLine(ex.Message);
             }
 
+            // Persist current state before exit
             testData.SaveTestUser(user);
             Console.WriteLine();
             Console.WriteLine("Current state saved to disk.");
@@ -112,3 +101,4 @@ namespace ApplicantJourney
         }
     }
 }
+
