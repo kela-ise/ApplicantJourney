@@ -6,14 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/*
- <summary>
- Provides test data to simulate users, companies, job listings, applications, and resumes.
- Also supports saving/loading the generated test data using XML serialization.
- </summary>
-*/
+
+
 namespace ApplicantJourney
 {
+    /*
+     <summary>
+     Provides test data to simulate users, companies, job listings, applications, and resumes.
+     Also supports saving/loading the generated test data using XML serialization.
+     </summary>
+    */
     public class TestData
     {
         private static readonly string FilePath = Constants.TestDataFileName;
@@ -31,10 +33,10 @@ namespace ApplicantJourney
 
                 Preferences = new JobPreferences
                 {
-                    PreferredJobTitles = new[] { "Seniour Software Engineer", "Seniour Backend Developer", "Junior Integrations Engineer" },
+                    PreferredJobTitles = new[] { "Senior Software Engineer", "Senior Backend Developer", "Junior Integrations Engineer" },
                     Locations = new[] { "Austin, TX", "Remote" },
                     IsRemote = true,
-                    MinSalary = 85000f
+                    MinSalary = Constants.DefaultAverageSalarySample
                 },
 
                 Notifications = new NotificationSettings
@@ -46,32 +48,36 @@ namespace ApplicantJourney
             };
 
             var company = TestData.CreateTestCompany();
+            var postingDate = DateTime.Now.AddDays(-Constants.DefaultJobPostingDaysAgoSample);
 
             var job = new JobListing
             {
-                Id = 101,
+                Id = Constants.DefaultJobIdSample,
                 JobTitle = "Junior Software Engineer",
                 Company = company.Id,
-                JobPostingDate = DateTime.Now.AddDays(-3),
-                JobExpirationDate = DateTime.Now.AddDays(27),
-                JobDescription = "Develop and maintain software solutions.",
-                ExperienceLevel = "Entry Level",
+                JobPostingDate = postingDate,
+                JobExpirationDate = postingDate.AddDays(Constants.DefaultJobExpirationDays),
+
+                // Sample uses plain sentence; store as raw HTML
+                JobDescriptionHtml = "Develop and maintain software solutions.",
+
+                ExperienceLevel = Constants.DefaultExperienceLevelEntry,
                 Source = JobListingSource.CompanyWebsite,
                 Url = "https://www.metacareers.com/jobs/683293827670564",
-                ApplicantsCount = 42,
+                ApplicantsCount = Constants.DefaultApplicantsCountSample,
                 Type = JobType.FullTime,
                 Salary = new SalaryRange
                 {
-                    Min = 180000f,
-                    Max = 250000f,
-                    Currency = "USD"
+                    Min = Constants.DefaultMinSalarySample,
+                    Max = Constants.DefaultMaxSalarySample,
+                    Currency = Constants.DefaultCurrency
                 },
                 JobLocation = new LocationInfo
                 {
-                    LocationType = "Remote",
+                    LocationType = Constants.LocationTypeRemote,
                     IsRemote = true,
                     IsHybrid = false,
-                    PhysicalLocation = "N/A"
+                    PhysicalLocation = Constants.LocationNotAvailable
                 }
             };
 
@@ -79,11 +85,11 @@ namespace ApplicantJourney
 
             var resume = new Resume
             {
-                Id = 1,
+                Id = Constants.DefaultResumeIdSample,
                 User = userId,
                 FileUrl = "https://www.beamjobs.com/resumes/software-engineer-resume-examples",
-                ResumeUploadTime = DateTime.Now.AddDays(-1),
-                AtsScore = 78.5f,
+                ResumeUploadTime = DateTime.Now.AddDays(-Constants.LastFollowUpDaysAgoSample),
+                AtsScore = Constants.DefaultAtsScoreSample,
                 MissingKeywords = new List<string> { "CI/CD", "Docker" },
                 FormatIssues = new List<string> { "Use of tables", "Font size inconsistency" },
                 JobMatches = new List<JobMatch>
@@ -94,7 +100,7 @@ namespace ApplicantJourney
                         MatchPercentage = 80.0f,
                         SuggestedImprovements = "Add CI/CD experience",
                         JobTitle = job.JobTitle,
-                        JobDescription = job.JobDescription
+                        JobDescription = "Develop and maintain software solutions."
                     }
                 }
             };
@@ -103,15 +109,15 @@ namespace ApplicantJourney
 
             var application = new Application
             {
-                Id = 5001,
-                ApplicantNumber = 101,
+                Id = Constants.DefaultApplicationIdSample,
+                ApplicantNumber = Constants.DefaultApplicantNumberSample,
                 Position = job.Id,
-                ApplicationTime = DateTime.Now.AddDays(-2),
+                ApplicationTime = DateTime.Now.AddDays(-Constants.ApplicationDaysAgoSample),
                 Status = ApplicationStatus.Applied,
                 ResumeUsed = resume.FileUrl,
-                AppicantNotes = "Excited about this opportunity. Matches my goals.",
-                LastFollowUpTime = DateTime.Now.AddDays(-1),
-                NextFollowUpTime = DateTime.Now.AddDays(3),
+                ApplicantNotes = "Excited about this opportunity. Matches my goals.",
+                LastFollowUpTime = DateTime.Now.AddDays(-Constants.LastFollowUpDaysAgoSample),
+                NextFollowUpTime = DateTime.Now.AddDays(Constants.NextFollowUpDaysFromNowSample),
                 SiteWhereUserApplied = UserJobApplicationSite.LinkedInEasyApply
             };
 
@@ -123,34 +129,24 @@ namespace ApplicantJourney
             return user;
         }
 
-        /// <summary>
-        /// Creates a sample company for test data.
-        /// Now marked static because it does not rely on instance members.
-        /// </summary>
         public static CompanyData CreateTestCompany()
         {
             return new CompanyData
             {
-                Id = 2001,
+                Id = Constants.DefaultCompanyIdSample,
                 Name = "Meta Inc.",
                 HiringTrends = "Hiring aggressively in AI and backend roles.",
-                AverageSalary = 92000f,
-                JobSource = "CompanyWebsite",
+                AverageSalary = Constants.DefaultAverageSalarySample,
+                JobSource = JobListingSource.CompanyWebsite.ToString(),
                 ReputationScore = 4.3f,
                 EstimatedApplications = 150,
                 CompetitionInsights = "High competition for remote roles, especially junior positions."
             };
         }
 
-        /// <summary>
-        /// Save user test data to XML file (safe write with descriptive temp file).
-        /// Made public so callers can persist changes any time.
-        /// </summary>
         public void SaveTestUser(UserData user)
         {
             var serializer = new XmlSerializer(typeof(UserData));
-
-            // Use a descriptive name for the temp file (e.g., "TestData.tempSerializationFile.xml")
             var tempFilePath = FilePath.Replace(".xml", Constants.TempSerializationSuffix);
 
             using (var writer = new StreamWriter(tempFilePath))
@@ -158,19 +154,15 @@ namespace ApplicantJourney
                 serializer.Serialize(writer, user);
             }
 
-            File.Copy(tempFilePath, FilePath, overwrite: true); // overwrite safely
+            File.Copy(tempFilePath, FilePath, overwrite: true);
             File.Delete(tempFilePath);
         }
 
-        /// <summary>
-        /// Load user test data from XML file (short version).
-        /// Returns null if the file does not exist.
-        /// </summary>
         public UserData? LoadTestUser()
         {
             if (!File.Exists(FilePath))
             {
-                return null; // No saved file found
+                return null;
             }
 
             var serializer = new XmlSerializer(typeof(UserData));

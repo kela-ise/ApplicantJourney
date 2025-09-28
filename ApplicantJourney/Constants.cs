@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace ApplicantJourney
 {
     /// <summary>
@@ -11,15 +12,25 @@ namespace ApplicantJourney
     /// </summary>
     public static class Constants
     {
-        // File names 
+
+        // Files & serialization
         public const string TestDataFileName = "TestData.xml";
         public const string TempSerializationSuffix = ".tempSerializationFile.xml";
+
 
         // Common indexes
         public const int FirstIndex = 0;
 
-        // Defaults for sample/test data
+        // Defaults / IDs for sample data
         public const int DefaultUserId = 1001;
+        public const int DefaultCompanyIdSample = 2001;
+        public const int DefaultJobIdSample = 101;
+        public const int DefaultResumeIdSample = 1;
+        public const int DefaultApplicationIdSample = 5001;
+        public const int DefaultApplicantNumberSample = 101;
+
+
+        public const int JobDescriptionPreviewChars = 250;
 
         // Console strings
         public const string AppName = "Job Application Tracking System";
@@ -32,6 +43,37 @@ namespace ApplicantJourney
         public const string ResumeHeader = "Resume Info:";
         public const string ApplicationHeader = "Application Info:";
         public const string ExitPrompt = "Press any key to exit...";
+
+
+        // Greenhouse / Job Source
+        public const string DefaultGreenhouseBoardToken = "vaulttec";
+
+
+        // Job defaults / labels
+        public const int DefaultJobExpirationDays = 30;                  // Used when we don't get a specific expiration
+        public const int DefaultJobPostingDaysAgoSample = 3;             // Posted X days ago
+        public const int DefaultApplicantsCountForImported = 0;          // Imported jobs unknown applicants
+        public const int DefaultApplicantsCountSample = 42;              // Sample data count
+        public const string DefaultExperienceLevelEntry = "Entry Level";
+        public const string DefaultExperienceLevelUnknown = "Not specified";
+        public const string DefaultCurrency = "USD";
+        public const string LocationTypeRemote = "Remote";
+        public const string LocationTypeOfficeHybrid = "Office/Hybrid";
+        public const string LocationNotAvailable = "N/A";
+        public const string UnknownLocationLabel = "Unknown";
+
+
+        // Salary sample data
+        public const float DefaultMinSalarySample = 180000f;
+        public const float DefaultMaxSalarySample = 250000f;
+        public const float DefaultAverageSalarySample = 92000f;
+
+        // Resume / ATS sample data
+        public const float DefaultAtsScoreSample = 78.5f;
+
+        // Application timelines sample
+        public const int ApplicationDaysAgoSample = 2;         // For example DateTime.Now.AddDays(-2)
+        public const int LastFollowUpDaysAgoSample = 1;        //  DateTime.Now.AddDays(-1)
+        public const int NextFollowUpDaysFromNowSample = 3;    //  DateTime.Now.AddDays(+3)
     }
 }
-

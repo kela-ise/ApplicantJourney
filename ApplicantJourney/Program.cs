@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using static ApplicantJourney.Constants;
 
+
+
 namespace ApplicantJourney
 {
     internal class Program
@@ -38,9 +40,9 @@ namespace ApplicantJourney
             Console.WriteLine();
 
             // Ask for Greenhouse board token
-            Console.Write("Enter a Greenhouse board token (default = vaulttec): ");
+            Console.Write($"Enter a Greenhouse board token (default = {DefaultGreenhouseBoardToken}): ");
             var inputToken = Console.ReadLine();
-            var boardToken = string.IsNullOrWhiteSpace(inputToken) ? "vaulttec" : inputToken.Trim();
+            var boardToken = string.IsNullOrWhiteSpace(inputToken) ? DefaultGreenhouseBoardToken : inputToken.Trim();
 
             var greenhouseClient = new GreenhouseApiClient();
             Console.WriteLine("\nFetching live job listings from Greenhouse (with HTML descriptions)...");
@@ -57,19 +59,17 @@ namespace ApplicantJourney
                 {
                     Console.WriteLine($"Found {jobsResponse.Meta?.Total ?? jobsResponse.Jobs.Count} jobs:\n");
 
-                    foreach (var gh in jobsResponse.Jobs)
+                    foreach (var greenhouseJob in jobsResponse.Jobs)
                     {
-                        // Map API job into our domain model (store raw HTML in JobDescription)
-                        var mapped = gh.ToJobListing(companyId: 0);
+                        // Map API job into our domain model (keeps raw HTML only)
+                        var mapped = greenhouseJob.ToJobListing(companyId: 0);
 
                         Console.WriteLine($"- {mapped.JobTitle} | {mapped.JobLocation.PhysicalLocation}");
                         Console.WriteLine($"  {mapped.Url}");
 
-                        // I'm returning the first 250 characters of the job description
-                        var html = mapped.JobDescription ?? string.Empty;
-                        var previewLength = Math.Min(250, html.Length);
-                        var previewExact = html.Substring(0, previewLength);
-                        Console.WriteLine($"  Description (first 250 chars, raw HTML): {previewExact}");
+                        // Compute preview on-the-fly for console readability (plain text derived from raw HTML).
+                        var preview = GreenhouseJob.GetPlainTextPreview(mapped.JobDescriptionHtml, JobDescriptionPreviewChars);
+                        Console.WriteLine($"  Description (first {JobDescriptionPreviewChars} chars, plain text): {preview}");
                         Console.WriteLine();
                     }
                 }
@@ -101,4 +101,3 @@ namespace ApplicantJourney
         }
     }
 }
-

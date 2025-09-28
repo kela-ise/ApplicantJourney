@@ -40,7 +40,7 @@ namespace ApplicantJourney
         [JsonPropertyName("absolute_url")]
         public string AbsoluteUrl { get; set; }
 
-        // Only present when ?content=true is used
+        // Present when ?content=true is used
         [JsonPropertyName("content")]
         public string? Content { get; set; }
 
@@ -49,15 +49,11 @@ namespace ApplicantJourney
 
         public JobListing ToJobListing(int companyId)
         {
-            var locationName = Location?.Name ?? "Unknown";
+            var locationName = Location?.Name ?? Constants.UnknownLocationLabel;
             var isRemote = locationName.IndexOf("remote", StringComparison.OrdinalIgnoreCase) >= 0;
 
-            // Use plain text for description to keep console readable
-            var description = GetPlainText(Content);
-            if (string.IsNullOrWhiteSpace(description))
-            {
-                description = $"Imported from Greenhouse (Req: {RequisitionId})";
-            }
+            // Preserve raw HTML (full original API data). No plain-text stored.
+            var rawHtml = Content ?? string.Empty;
 
             return new JobListing
             {
@@ -65,16 +61,16 @@ namespace ApplicantJourney
                 JobTitle = Title,
                 Company = companyId,
                 JobPostingDate = UpdatedAt,
-                JobExpirationDate = UpdatedAt.AddDays(30),
-                JobDescription = description,
-                ExperienceLevel = "Not specified",
+                JobExpirationDate = UpdatedAt.AddDays(Constants.DefaultJobExpirationDays),
+                JobDescriptionHtml = rawHtml, // keep original description as-is
+                ExperienceLevel = Constants.DefaultExperienceLevelUnknown,
                 Source = JobListingSource.CompanyWebsite,
                 Url = AbsoluteUrl,
-                ApplicantsCount = 0,
-                Salary = new SalaryRange { Min = 0, Max = 0, Currency = "USD" },
+                ApplicantsCount = Constants.DefaultApplicantsCountForImported,
+                Salary = new SalaryRange { Min = 0, Max = 0, Currency = Constants.DefaultCurrency },
                 JobLocation = new LocationInfo
                 {
-                    LocationType = isRemote ? "Remote" : "Office/Hybrid",
+                    LocationType = isRemote ? Constants.LocationTypeRemote : Constants.LocationTypeOfficeHybrid,
                     IsRemote = isRemote,
                     IsHybrid = !isRemote && locationName.IndexOf("hybrid", StringComparison.OrdinalIgnoreCase) >= 0,
                     PhysicalLocation = locationName
@@ -83,14 +79,9 @@ namespace ApplicantJourney
             };
         }
 
-        public static string GetPlainTextPreview(string? html, int maxChars)
-        {
-            var text = GetPlainText(html);
-            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
-            text = Regex.Replace(text, @"\s+", " ").Trim();
-            return text.Length <= maxChars ? text : text.Substring(0, maxChars) + "...";
-        }
-
+        /// <summary>
+        /// Utility: convert HTML to plain text for display contexts (does not mutate stored data).
+        /// </summary>
         public static string GetPlainText(string? html)
         {
             if (string.IsNullOrEmpty(html)) return string.Empty;
@@ -106,6 +97,16 @@ namespace ApplicantJourney
                 .Replace("&#39;", "'");
             return Regex.Replace(text, @"\s+", " ").Trim();
         }
+
+        /// <summary>
+        /// Utility: first N chars of plain text for previews (does not mutate stored data).
+        /// </summary>
+        public static string GetPlainTextPreview(string? html, int maxChars)
+        {
+            var text = GetPlainText(html);
+            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+            return text.Length <= maxChars ? text : text.Substring(0, maxChars) + "...";
+        }
     }
 
     public class GreenhouseLocation
@@ -120,3 +121,4 @@ namespace ApplicantJourney
         public int Total { get; set; }
     }
 }
+
