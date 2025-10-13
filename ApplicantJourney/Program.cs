@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using static ApplicantJourney.Constants;
 
 
-
 namespace ApplicantJourney
 {
     internal class Program
     {
+       
         static void Main(string[] args)
         {
             Console.WriteLine($"Welcome to the {AppName}!");
@@ -20,6 +20,7 @@ namespace ApplicantJourney
 
             var testData = new TestData();
             var user = testData.LoadTestUser();
+
             if (user == null)
             {
                 Console.WriteLine(NoSavedDataMessage);
@@ -39,62 +40,45 @@ namespace ApplicantJourney
             Console.WriteLine($"Preferred Locations: {string.Join(", ", user.Preferences.Locations)}");
             Console.WriteLine();
 
-            // Ask for Greenhouse board token
             Console.Write($"Enter a Greenhouse board token (default = {DefaultGreenhouseBoardToken}): ");
             var inputToken = Console.ReadLine();
-            var boardToken = string.IsNullOrWhiteSpace(inputToken) ? DefaultGreenhouseBoardToken : inputToken.Trim();
+            var boardToken = string.IsNullOrWhiteSpace(inputToken)
+                ? DefaultGreenhouseBoardToken
+                : inputToken.Trim();
 
-            var greenhouseClient = new GreenhouseApiClient();
-            Console.WriteLine("\nFetching live job listings from Greenhouse (with HTML descriptions)...");
+            Console.WriteLine("\nFetching live job listings from Greenhouse (full HTML descriptions)...");
             Console.WriteLine($"Greenhouse API URL: https://boards-api.greenhouse.io/v1/boards/{boardToken}/jobs?content=true");
 
             try
             {
-                var jobsResponse = greenhouseClient
-                    .FetchJobsAsync(boardToken, includeContent: true)
-                    .GetAwaiter()
-                    .GetResult();
+                var logic = new Logic();
+                var jobs = logic.RunPipelineAsync(
+                    boardToken: boardToken,
+                    companyId: 0,
+                    includeContent: true,
+                    sortBy: "date",
+                    sortDesc: true,
+                    page: DefaultPage,
+                    pageSize: DefaultPageSize
+                ).GetAwaiter().GetResult();
 
-                if (jobsResponse?.Jobs != null && jobsResponse.Jobs.Count > 0)
+                foreach (var job in jobs)
                 {
-                    Console.WriteLine($"Found {jobsResponse.Meta?.Total ?? jobsResponse.Jobs.Count} jobs:\n");
-
-                    foreach (var greenhouseJob in jobsResponse.Jobs)
-                    {
-                        // Map API job into our domain model (keeps raw HTML only)
-                        var mapped = greenhouseJob.ToJobListing(companyId: 0);
-
-                        Console.WriteLine($"- {mapped.JobTitle} | {mapped.JobLocation.PhysicalLocation}");
-                        Console.WriteLine($"  {mapped.Url}");
-
-                        // Compute preview on-the-fly for console readability (plain text derived from raw HTML).
-                        var preview = GreenhouseJob.GetPlainTextPreview(mapped.JobDescriptionHtml, JobDescriptionPreviewChars);
-                        Console.WriteLine($"  Description (first {JobDescriptionPreviewChars} chars, plain text): {preview}");
-                        Console.WriteLine();
-                    }
+                    Console.WriteLine($"- {job.JobTitle} | {job.JobLocation?.PhysicalLocation}");
+                    Console.WriteLine($"  {job.Url}");
+                    Console.WriteLine("  Description:");
+                    Console.WriteLine(job.JobDescriptionHtml);
+                    Console.WriteLine();
                 }
-                else
-                {
-                    Console.WriteLine("No jobs found or API request failed.");
-                }
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine($"Message: {ex.Message}");
-                Console.WriteLine("Tip: verify the token in a browser: https://boards.greenhouse.io/<token>");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\nUnexpected error while fetching jobs:");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"\nError: {ex.Message}");
             }
 
-            // Persist current state before exit
             testData.SaveTestUser(user);
             Console.WriteLine();
             Console.WriteLine("Current state saved to disk.");
-
             Console.WriteLine();
             Console.WriteLine(ExitPrompt);
             Console.ReadKey();
