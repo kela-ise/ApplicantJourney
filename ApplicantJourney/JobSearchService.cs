@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
 namespace ApplicantJourney
 {
     /// <summary>
@@ -26,8 +24,8 @@ namespace ApplicantJourney
 
         public IEnumerable<JobListing> Filter(
             IEnumerable<JobListing> jobs,
-            string titleContains = null,
-            string locationContains = null,
+            string? titleContains = null,
+            string? locationContains = null,
             bool? remoteOnly = null,
             JobType? type = null,
             JobListingSource? source = null,
@@ -94,7 +92,7 @@ namespace ApplicantJourney
         /// </summary>
         public IEnumerable<JobListing> Dedupe(IEnumerable<JobListing> jobs)
         {
-            if (jobs == null) yield break; // <-- fix for CS1622 (iterator cannot 'return' a value)
+            if (jobs == null) yield break;
 
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var j in jobs)
@@ -108,4 +106,3 @@ namespace ApplicantJourney
         }
     }
 }
-

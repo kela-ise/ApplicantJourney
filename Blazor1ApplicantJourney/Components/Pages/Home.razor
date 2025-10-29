@@ -1,21 +1,224 @@
 ﻿@page "/"
+@using ApplicantJourney
 
-<PageTitle>Home</PageTitle>
+@inject Logic Logic
 
-<style>
-    .centered-text {
-        text-align: center;
-        color: darkblue;
+<!-- Home page: shows job listings (description rendered as PLAIN TEXT only) -->
+<h1 class="mb-3">Latest Job Listings</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <label class="form-label">Greenhouse Board Token</label>
+                <input class="form-control" @bind="boardToken" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Title contains</label>
+                <input class="form-control" @bind="titleContains" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Location contains</label>
+                <input class="form-control" @bind="locationContains" />
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remoteOnly" @bind="remoteOnly" />
+                    <label class="form-check-label" for="remoteOnly">Remote only</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Job type</label>
+                <select class="form-select" @bind="jobType">
+                    <option value="">(Any)</option>
+                    @foreach (var t in Enum.GetValues<JobType>())
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Source</label>
+                <select class="form-select" @bind="jobSource">
+                    <option value="">(Any)</option>
+                    @foreach (var s in Enum.GetValues<JobListingSource>())
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Posted after</label>
+                <input type="date" class="form-control" @bind="postedAfterDateOnly" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Sort by</label>
+                <select class="form-select" @bind="sortBy">
+                    <option value="date">Date</option>
+                    <option value="title">Title</option>
+                    <option value="company">Company</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="sortDesc" @bind="sortDesc" />
+                    <label class="form-check-label" for="sortDesc">Descending</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Page</label>
+                <input class="form-control" type="number" min="@Constants.DefaultPage" @bind="page" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Page size</label>
+                <input class="form-control" type="number" min="@Constants.DefaultPageSize" @bind="pageSize" />
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" @onclick="Apply" disabled="@(loading)">
+                    @(loading ? "Loading..." : "Apply Filters")
+                </button>
+                <button class="btn btn-secondary" @onclick="Refresh" disabled="@(loading)">Refresh</button>
+                <button class="btn btn-outline-secondary" @onclick="Clear" disabled="@(loading)">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (jobs.Count == 0 && !loading && string.IsNullOrEmpty(errorMessage))
+{
+    <p>No jobs found.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var j in jobs)
+        {
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="pe-3">
+                        <strong>@j.JobTitle</strong>
+                        <div class="text-muted">
+                            @j.JobLocation?.PhysicalLocation
+                            @if (j.JobLocation?.IsRemote == true)
+                            {
+                                <span>(Remote)</span>
+                            }
+                        </div>
+
+                        <!-- PLAIN TEXT description, no HTML tags -->
+                        <div class="mt-2">
+                            @ApplicantJourney.HtmlText.ToPlainText(j.JobDescriptionHtml)
+                        </div>
+
+                        <div class="mt-2">
+                            <a href="@j.Url" target="_blank" rel="noopener noreferrer">@j.Url</a>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <small>Posted: @j.JobPostingDate.ToShortDateString()</small>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private string boardToken = Constants.DefaultGreenhouseBoardToken;
+
+    private string? titleContains;
+    private string? locationContains;
+    private bool remoteOnly;
+    private JobType? jobType;
+    private JobListingSource? jobSource;
+    private DateTime? postedAfterDateOnly;
+
+    private string sortBy = "date";
+    private bool sortDesc = true;
+    private int page = Constants.DefaultPage;
+    private int pageSize = Constants.DefaultPageSize;
+
+    private List<JobListing> jobs = new();
+    private bool loading;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
     }
 
-    .bold-part {
-        font-weight: bold;
-    }
-</style>
+    private async Task Apply() => await LoadJobs();
+    private async Task Refresh() => await LoadJobs();
 
-<h1 class="centered-text">
-    Welcome to <span class="bold-part">Applicant Journey</span>.
-</h1>
-<h3 class="centered-text">
-    This system helps you track job postings, monitor your applications status, and optimize resumes.
-</h3>
+    private Task Clear()
+    {
+        titleContains = null;
+        locationContains = null;
+        remoteOnly = false;
+        jobType = null;
+        jobSource = null;
+        postedAfterDateOnly = null;
+
+        sortBy = "date";
+        sortDesc = true;
+        page = Constants.DefaultPage;
+        pageSize = Constants.DefaultPageSize;
+
+        return LoadJobs();
+    }
+
+    private async Task LoadJobs()
+    {
+        errorMessage = null;
+        loading = true;
+        jobs.Clear();
+
+        try
+        {
+            var results = await Logic.RunPipelineAsync(
+                boardToken: boardToken ?? string.Empty,
+                companyId: 0,
+                includeContent: true,
+                titleContains: string.IsNullOrWhiteSpace(titleContains) ? null : titleContains,
+                locationContains: string.IsNullOrWhiteSpace(locationContains) ? null : locationContains,
+                remoteOnly: remoteOnly ? true : null,
+                type: jobType,
+                source: jobSource,
+                postedAfter: postedAfterDateOnly,
+                sortBy: sortBy,
+                sortDesc: sortDesc,
+                page: page,
+                pageSize: pageSize
+            );
+
+            jobs = results.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Could not load jobs: {ex.Message}";
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

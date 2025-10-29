@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace ApplicantJourney
 {
     /// <summary>
@@ -15,7 +14,7 @@ namespace ApplicantJourney
         private readonly IJobSource _source;
         private readonly JobSearchService _service;
 
-        public Logic(IJobSource source = null, JobSearchService service = null)
+        public Logic(IJobSource? source = null, JobSearchService? service = null)
         {
             _source = source ?? new GreenhouseSource();
             _service = service ?? new JobSearchService();
@@ -34,8 +33,8 @@ namespace ApplicantJourney
 
         public IEnumerable<JobListing> ApplyFilters(
             IEnumerable<JobListing> jobs,
-            string titleContains = null,
-            string locationContains = null,
+            string? titleContains = null,
+            string? locationContains = null,
             bool? remoteOnly = null,
             JobType? type = null,
             JobListingSource? source = null,
@@ -53,8 +52,8 @@ namespace ApplicantJourney
             string boardToken,
             int companyId,
             bool includeContent,
-            string titleContains = null,
-            string locationContains = null,
+            string? titleContains = null,
+            string? locationContains = null,
             bool? remoteOnly = null,
             JobType? type = null,
             JobListingSource? source = null,

@@ -8,7 +8,7 @@ namespace ApplicantJourney
 {
     internal class Program
     {
-       
+
         static void Main(string[] args)
         {
             Console.WriteLine($"Welcome to the {AppName}!");

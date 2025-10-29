@@ -18,7 +18,7 @@ namespace Blazor1ApplicantJourney
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            //  Connect to ApplicantJourney logic layer (no business logic here)
+            //  Connect to ApplicantJourney logic layer 
             builder.Services.AddSingleton<JobSearchService>();
             builder.Services.AddSingleton<IJobSource, GreenhouseSource>();
             builder.Services.AddTransient<Logic>(sp =>

@@ -36,6 +36,8 @@ namespace ApplicantJourney
         public LocationInfo JobLocation { get; set; } // Nested class for location info
         public JobType Type { get; set; }
 
+        public string JobDescriptionPlain => HtmlText.ToPlainText(JobDescriptionHtml); // Plain text version of description (strips HTML tags)
+
         public void AddJobListing(   // Method to add a new job listing (placeholder)
             string title,
             int companyId,

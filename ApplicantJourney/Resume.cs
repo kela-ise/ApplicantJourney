@@ -9,11 +9,14 @@ using System.Threading.Tasks;
 */
 namespace ApplicantJourney
 {
-    public class Resume  
+    public class Resume
     {
         public int Id { get; set; } // Unique resume ID
         public int User { get; set; }  // ID of the user who uploaded it
-        public string FileUrl { get; set; }   // URL or path where the resume file is stored
+
+        // Initialize to empty string to satisfy non-nullable property contract.
+        public string FileUrl { get; set; } = string.Empty;
+
         public DateTime ResumeUploadTime { get; set; }
         public float AtsScore { get; set; }  // ATS score analysis result
         public List<string> MissingKeywords { get; set; } = new List<string>();  // Keywords missing from resume

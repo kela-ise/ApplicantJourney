@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 namespace ApplicantJourney
 {
@@ -40,7 +36,7 @@ namespace ApplicantJourney
         [JsonPropertyName("absolute_url")]
         public string AbsoluteUrl { get; set; }
 
-        // Present when ?content=true is used
+        // Raw vendor HTML (present when ?content=true)
         [JsonPropertyName("content")]
         public string? Content { get; set; }
 
@@ -52,9 +48,6 @@ namespace ApplicantJourney
             var locationName = Location?.Name ?? Constants.UnknownLocationLabel;
             var isRemote = locationName.IndexOf("remote", StringComparison.OrdinalIgnoreCase) >= 0;
 
-            // Preserve raw HTML (full original API data). No plain-text stored.
-            var rawHtml = Content ?? string.Empty;
-
             return new JobListing
             {
                 Id = Id,
@@ -62,7 +55,8 @@ namespace ApplicantJourney
                 Company = companyId,
                 JobPostingDate = UpdatedAt,
                 JobExpirationDate = UpdatedAt.AddDays(Constants.DefaultJobExpirationDays),
-                JobDescriptionHtml = rawHtml, // keep original description as-is
+                // IMPORTANT: store PLAIN TEXT so any renderer shows no tags
+                JobDescriptionHtml = HtmlText.ToPlainText(Content ?? string.Empty), // plain text, no <p>, &nbsp;, etc.
                 ExperienceLevel = Constants.DefaultExperienceLevelUnknown,
                 Source = JobListingSource.CompanyWebsite,
                 Url = AbsoluteUrl,
@@ -78,35 +72,6 @@ namespace ApplicantJourney
                 Type = JobType.FullTime
             };
         }
-
-        /// <summary>
-        /// Utility: convert HTML to plain text for display contexts (does not mutate stored data).
-        /// </summary>
-        public static string GetPlainText(string? html)
-        {
-            if (string.IsNullOrEmpty(html)) return string.Empty;
-            var noScript = Regex.Replace(html, @"<script[\s\S]*?</script>", "", RegexOptions.IgnoreCase);
-            var noStyle = Regex.Replace(noScript, @"<style[\s\S]*?</style>", "", RegexOptions.IgnoreCase);
-            var noTags = Regex.Replace(noStyle, "<.*?>", " ");
-            string text = noTags
-                .Replace("&nbsp;", " ")
-                .Replace("&amp;", "&")
-                .Replace("&lt;", "<")
-                .Replace("&gt;", ">")
-                .Replace("&quot;", "\"")
-                .Replace("&#39;", "'");
-            return Regex.Replace(text, @"\s+", " ").Trim();
-        }
-
-        /// <summary>
-        /// Utility: first N chars of plain text for previews (does not mutate stored data).
-        /// </summary>
-        public static string GetPlainTextPreview(string? html, int maxChars)
-        {
-            var text = GetPlainText(html);
-            if (string.IsNullOrWhiteSpace(text)) return string.Empty;
-            return text.Length <= maxChars ? text : text.Substring(0, maxChars) + "...";
-        }
     }
 
     public class GreenhouseLocation
@@ -121,4 +86,3 @@ namespace ApplicantJourney
         public int Total { get; set; }
     }
 }
-
