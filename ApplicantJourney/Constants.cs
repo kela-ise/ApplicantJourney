@@ -29,7 +29,7 @@ namespace ApplicantJourney
 
         // App metadata / Console strings (shared with Blazor)
         public const string AppName = "Job Application Tracking System";
-        public const string WelcomeMessage =  "This system helps you track job postings, monitor applications, and optimize resumes.";
+        public const string WelcomeMessage = "This system helps you track job postings, monitor applications, and optimize resumes.";
         public const string NoSavedDataMessage = "No saved data found. Creating and saving test user...";
         public const string SavedDataCreatedMessage = "Test user created and saved.";
         public const string LoadedFromDiskMessage = "Loaded test user from disk.";
@@ -71,7 +71,7 @@ namespace ApplicantJourney
 
         // Page display (used by Blazor and Logic layers)
         public const int DefaultPage = 1;
-        public const int DefaultPageSize = 100; 
+        public const int DefaultPageSize = 100;
 
         // Display
         public const int JobDescriptionPreviewChars = 250;

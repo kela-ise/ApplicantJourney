@@ -9,6 +9,7 @@ namespace Blazor1ApplicantJourney
         /// <summary>
         /// Basic Blazor app setup.
         /// Business logic can be found in ApplicantJourney (Logic.cs, JobSearchService, etc.).
+        /// Updated to include CompanyConfiguration.
         /// </summary>
         public static void Main(string[] args)
         {
@@ -18,7 +19,7 @@ namespace Blazor1ApplicantJourney
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            //  Connect to ApplicantJourney logic layer 
+            // Connect to ApplicantJourney logic layer 
             builder.Services.AddSingleton<JobSearchService>();
             builder.Services.AddSingleton<IJobSource, GreenhouseSource>();
             builder.Services.AddTransient<Logic>(sp =>
@@ -27,8 +28,6 @@ namespace Blazor1ApplicantJourney
                     sp.GetRequiredService<JobSearchService>()
                 )
             );
-
-
 
             var app = builder.Build();
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApplicantJourney
 {
-    public enum JobListingSource   
+    public enum JobListingSource
     {// NOTE: avoid duplicate post, if same job is posted in multiple sites
         LinkedIn,
         Indeed,
@@ -16,4 +16,3 @@ namespace ApplicantJourney
         Other
     }
 }
-

@@ -11,7 +11,7 @@ namespace ApplicantJourney
     /// </summary>
     public sealed class ProviderRequest
     {
-        
+
         public string BoardToken { get; init; } = string.Empty; //Provider-specific board token (e.g., Greenhouse board key).
 
         public int CompanyId { get; init; } = 0;  // Optional internal company ID used for mapping.

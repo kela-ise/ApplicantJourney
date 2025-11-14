@@ -22,26 +22,26 @@ namespace ApplicantJourney
         public int InternalJobId { get; set; }
 
         [JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [JsonPropertyName("updated_at")]
         public DateTime UpdatedAt { get; set; }
 
         [JsonPropertyName("requisition_id")]
-        public string RequisitionId { get; set; }
+        public string RequisitionId { get; set; } = string.Empty;
 
         [JsonPropertyName("location")]
         public GreenhouseLocation? Location { get; set; }
 
         [JsonPropertyName("absolute_url")]
-        public string AbsoluteUrl { get; set; }
+        public string AbsoluteUrl { get; set; } = string.Empty;
 
-        // Raw vendor HTML (present when ?content=true)
+        // Raw vendor HTML content when ?content=true parameter is included
         [JsonPropertyName("content")]
         public string? Content { get; set; }
 
         [JsonPropertyName("metadata")]
-        public object Metadata { get; set; }
+        public object Metadata { get; set; } = new object();
 
         public JobListing ToJobListing(int companyId)
         {
@@ -55,8 +55,8 @@ namespace ApplicantJourney
                 Company = companyId,
                 JobPostingDate = UpdatedAt,
                 JobExpirationDate = UpdatedAt.AddDays(Constants.DefaultJobExpirationDays),
-                // IMPORTANT: store PLAIN TEXT so any renderer shows no tags
-                JobDescriptionHtml = HtmlText.ToPlainText(Content ?? string.Empty), // plain text, no <p>, &nbsp;, etc.
+                // Store plain text version for consistent display across renderers
+                JobDescriptionHtml = HtmlText.ToPlainText(Content ?? string.Empty),
                 ExperienceLevel = Constants.DefaultExperienceLevelUnknown,
                 Source = JobListingSource.CompanyWebsite,
                 Url = AbsoluteUrl,
@@ -77,7 +77,7 @@ namespace ApplicantJourney
     public class GreenhouseLocation
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     public class GreenhouseMeta

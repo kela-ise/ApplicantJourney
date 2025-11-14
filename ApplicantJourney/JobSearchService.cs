@@ -8,6 +8,7 @@ namespace ApplicantJourney
 {
     /// <summary>
     /// logic for filtering and sorting job listings.
+    /// Updated to support total count tracking for pagination display.
     /// </summary>
     public sealed class JobSearchService
     {
@@ -22,7 +23,7 @@ namespace ApplicantJourney
             return _cache;
         }
 
-        public IEnumerable<JobListing> Filter(
+        public (IEnumerable<JobListing> FilteredJobs, int TotalCount) FilterWithCount(
             IEnumerable<JobListing> jobs,
             string? titleContains = null,
             string? locationContains = null,
@@ -31,7 +32,7 @@ namespace ApplicantJourney
             JobListingSource? source = null,
             DateTime? postedAfter = null)
         {
-            if (jobs == null) return Enumerable.Empty<JobListing>();
+            if (jobs == null) return (Enumerable.Empty<JobListing>(), 0);
 
             var q = jobs;
 
@@ -54,7 +55,21 @@ namespace ApplicantJourney
             if (postedAfter.HasValue)
                 q = q.Where(j => j.JobPostingDate >= postedAfter.Value);
 
-            return q;
+            var filteredList = q.ToList();
+            return (filteredList, filteredList.Count);
+        }
+
+        public IEnumerable<JobListing> Filter(
+            IEnumerable<JobListing> jobs,
+            string? titleContains = null,
+            string? locationContains = null,
+            bool? remoteOnly = null,
+            JobType? type = null,
+            JobListingSource? source = null,
+            DateTime? postedAfter = null)
+        {
+            var result = FilterWithCount(jobs, titleContains, locationContains, remoteOnly, type, source, postedAfter);
+            return result.FilteredJobs;
         }
 
         public IEnumerable<JobListing> Sort(IEnumerable<JobListing> jobs, string by, bool desc)
@@ -75,15 +90,30 @@ namespace ApplicantJourney
         /// <summary>
         /// Returns the jobs for a given page number and size.
         /// Default page = 1, size = 100 (Constants).
+        /// Returns both paged results and total count.
         /// </summary>
-        public IEnumerable<JobListing> NumberOfPages(IEnumerable<JobListing> jobs, int page, int pageSize)
+        public (IEnumerable<JobListing> PagedJobs, int TotalCount) GetPagedResultsWithCount(IEnumerable<JobListing> jobs, int page, int pageSize)
         {
-            if (jobs == null) return Enumerable.Empty<JobListing>();
+            if (jobs == null) return (Enumerable.Empty<JobListing>(), 0);
             if (page < Constants.DefaultPage) page = Constants.DefaultPage;
             if (pageSize < Constants.DefaultPageSize) pageSize = Constants.DefaultPageSize;
 
-            return jobs.Skip((page - Constants.DefaultPage) * pageSize)
-                       .Take(pageSize);
+            var jobList = jobs.ToList();
+            var totalCount = jobList.Count;
+            var pagedJobs = jobList.Skip((page - Constants.DefaultPage) * pageSize)
+                                   .Take(pageSize);
+
+            return (pagedJobs, totalCount);
+        }
+
+        /// <summary>
+        /// Returns the jobs for a given page number and size.
+        /// Default page = 1, size = 100 (Constants).
+        /// </summary>
+        public IEnumerable<JobListing> NumberOfPages(IEnumerable<JobListing> jobs, int page, int pageSize)
+        {
+            var result = GetPagedResultsWithCount(jobs, page, pageSize);
+            return result.PagedJobs;
         }
 
         /// <summary>

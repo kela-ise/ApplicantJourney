@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 */
 namespace ApplicantJourney
 {
-    public class UserData 
+    public class UserData
     {
         public int Id { get; set; }  // Unique identifier for the user
         public string Name { get; set; }
