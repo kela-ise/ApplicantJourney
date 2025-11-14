@@ -1,16 +1,14 @@
 using Blazor1ApplicantJourney.Components;
 using ApplicantJourney;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace Blazor1ApplicantJourney
 {
     public class Program
     {
-        /// <summary>
-        /// Basic Blazor app setup.
-        /// Business logic can be found in ApplicantJourney (Logic.cs, JobSearchService, etc.).
-        /// Updated to include CompanyConfiguration.
-        /// </summary>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -29,13 +27,17 @@ namespace Blazor1ApplicantJourney
                 )
             );
 
+            // Add authentication and authorization services if needed
+            builder.Services.AddCascadingAuthenticationState();
+            builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error", createScopeForErrors: true);
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
