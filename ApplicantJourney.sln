@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor1ApplicantJourney", "Blazor1ApplicantJourney\Blazor1ApplicantJourney.csproj", "{66C3898D-34DB-4972-977F-C6B042797055}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicantJourneyBlazorUI", "ApplicantJourneyBlazorUI\ApplicantJourneyBlazorUI.csproj", "{22E48160-F0D9-489D-93B5-8E2EB98A7141}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{66C3898D-34DB-4972-977F-C6B042797055}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66C3898D-34DB-4972-977F-C6B042797055}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66C3898D-34DB-4972-977F-C6B042797055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22E48160-F0D9-489D-93B5-8E2EB98A7141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22E48160-F0D9-489D-93B5-8E2EB98A7141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22E48160-F0D9-489D-93B5-8E2EB98A7141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22E48160-F0D9-489D-93B5-8E2EB98A7141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
